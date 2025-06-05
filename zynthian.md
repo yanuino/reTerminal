@@ -156,6 +156,42 @@ systemctl restart zynthian
 
 Press the mute button to check if the touch screen is working. Or press in the upper left corner to open the main menu. If it works, **give yourself a pat on the back!** ;)
 
+More stranger things: with the TP working, if I print its xinput properties, it says that the device is not enabled (even though it is working):
+```
+xinput list-props seeed-tp
+Device 'seeed-tp':
+	Device Enabled (145):	0
+[...]
+```
+Then, I can ‘break’ it touching the lower Y axis part, and it stops working, as always. BUT, I can enable it again, using:
+```
+xinput enable seeed-tp
+xinput list-props seeed-tp
+Device 'seeed-tp':
+	Device Enabled (145):	1
+[...]
+```
+And then, it works again, and I can use the whole screen! :joy: It won’t stop working until the next reboot, when the device is disabled again. I need to check why is it disabled in the first instance, but at least, the problem is easy to workaround.
+
+UPDATE: For those wondering, I ended up adding the following systemd service to fix the problem:
+```
+# cat /etc/systemd/system/xinput-enable-tp.service 
+[Unit]
+Description=Run xinput to enable seeed-tp device
+After=zynthian.service
+
+[Service]
+Environment=DISPLAY=:0
+Environment=XAUTHORITY=/root/.Xauthority
+Type=oneshot
+ExecStart=/bin/bash -c 'while ! $(xset q > /dev/null 2>&1); do sleep 2; done; sleep 5; xinput enable seeed-tp'
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+```
+It waits until Zynthian and Xorg are running, and then, after 5 seconds, it does the xinput trick. It’s not the most elegant solution, but as X is handled by Zynthian, and I don’t want to loose the hack on the next update, I couldn’t come up with a better solution :sweat_smile:
+
 Next step? The sound system.
 
 
