@@ -1,62 +1,35 @@
 
 # Overview
 
-This document explains the process of installing Zynthian in a [reTerminal](https://www.seeedstudio.com/ReTerminal-with-CM4-p-4904.html). The reTerminal is an embedded device which has a Raspberry Pi CM4, an LCD display, a multi-touch screen panel, some buttons and a very nice case. My model is the CM4 4032, so I have **4 GiB of RAM and 32 GiB of eMMC** storage.
+This document cover the process of installing Zynthian in a [reTerminal](https://www.seeedstudio.com/ReTerminal-with-CM4-p-4904.html). The reTerminal is a Raspberry Pi All in One Board: Powered by RPi CM4 32GB, integrated with IPS multi-touch screen, dual-band Wi-Fi & Bluetooth, pre-installed compatible Linux system.
 
 ![Image: SeeedStudio reTerminal (c)](reterminal.jpg)
 
-> Disclaimer: In this guide, I will assume that you have some minimal knowledge about Linux, command terminals, scripts, and so on. Nevertheless, just running the given steps will work, even whithout knowing what exactly they do.
-
-
-## Some considerations
-
-One important thing to note with this device is that it **does NOT have any sound interface** (at least, not exposed directly). Talking about installing Zynthian, this is a big issue. You can, however, use the exposed 40 pin header to add a RPi sound module, or, as in my case, use an external USB audio interface. It works without any problem.
-
-On the other hand, as you will see in a moment, this device does not use the SD card to boot up the system. This means that the **installation procedure is a bit more complex** than with a normal Raspberry Pi. But not much more :) .
-
-Let's begin!
-
-
 # Zynthian installation
 
-Of course, and first of all, you need to **download the Zynthian OS image** from the official web page. It's around 8 GiB (as of today, 12/2023), so it may take a while (but you won't sit and wait, there is work to do!).
-
-* [Zynthian OS last stable image](https://os.zynthian.org/zynthianos-last-stable.zip)
-* [Zynthian.org Software](https://zynthian.org/#software)
+Follow the instructions of the offical Zynthian web site [Zynthian.org Software](https://zynthian.org/#software) and the [Wiki](https://wiki.zynthian.org/index.php/Zynthian_Wiki_Home)
 
 ## Entering 'flash mode'
 
-Now, in order to flash the operating system into the eMMC, you need to boot it in a special mode. To do so, remove the back cover and the heatsink, and flip down the boot switch inside. Then, after installing the drivers in your PC/Mac, connect the reTerminal to your host using the USB-C cable. If everything is ok, your host will see it like an USB drive. The whole process is very well explained in the official Wiki, here:
+To flash the operating system into the reTerminal eMMC, you need to boot it in a special mode: [Flash Raspberry Pi OS/ 64-bit Ubuntu OS or Other OS to eMMC](https://wiki.seeedstudio.com/reTerminal/#flash-raspberry-pi-os-64-bit-ubuntu-os-or-other-os-to-emmc)
 
-* [Flash Raspberry Pi OS/ 64-bit Ubuntu OS or Other OS to eMMC](https://wiki.seeedstudio.com/reTerminal/#flash-raspberry-pi-os-64-bit-ubuntu-os-or-other-os-to-emmc)
+In short: remove the back cover and the heatsink, and flip down the boot switch inside. Then, after installing the drivers in your PC/Mac, connect the reTerminal to your host using the USB-C cable. If everything is ok, your host will see it like an USB drive.
 
-> NOTE: The back cover has two tabs around the middle screw holes. Once the four corner screws are removed, these tabs keep the cover from being released. You may need to insert something from both sides to pry them (with care) and be able to quit the cover. I did remove these tabs in my unit for easy future access.
-
-## Writing the Zynthian image
-
-Once the reTerminal is in *flash mode*, and you unzipped the Zynthian image, you can use the [Raspberry Pi Imager](https://www.raspberrypi.com/software/) to flash it. Select `Choose OS > Use Custom` to use the provided Zynthian `.img` file, and also select the eMMC device as destination. Press write and wait. In my case, it took around 15-20 minutes, so it's time for a coffee break :) .
-
----
-
-When finished, you can close the RPi Imager, and **umount/disconnect** the reTerminal from your PC/Mac. Then, **important**, flip up the boot switch (so it can boot in normal mode again), screw the heatsink and the back cover, and you are ready for the first boot!
+Flash the Zynthian image, disconnect the reTerminal from your computer and switch back the boot switch to normal mode.
 
 # Installing reTerminal drivers
 
-**Before you plug in the power supply** to your reTerminal, you must know that there are some drivers that need to be installed. So, the first time you boot up your device, the LCD will not work, and you will not be able to see anything there. Moreover, the Zynthian UI will not start because the configured sound card does not exist. But not to worry, we will fix everything in a while. So, are you ready?
+**You need network conection and a HDMI display connected to the microHDMI port could help a lot** Read [Accessing_Zynthian_from_your_computer](https://wiki.zynthian.org/index.php/Accessing_Zynthian_from_your_computer) from the Zynthian Wiki.
 
-Then, connect an **ethernet** cable and the **power** adapter to your reTerminal and wait. The first time it boots, it will make some automatic adjustments and is important to be patient. But, as you don't have the screen, how do you know that has finished? An external display connected to the micro-HDMI won't help you either. So what?
-
-The solution to this situation is SSH. You can connect using an SSH client to your reTerminal, and then fix these problems. When the device has booted up, it will have an IP address, which is what we need to know. Or, as it was in my case, if your system supports mDNS, use the name `zynthian.local` (or maybe `.lan`, depends on your network settings). All these things are well explained in the [Zynthian Wiki](https://wiki.zynthian.org/index.php/Accessing_Zynthian_from_your_computer). So, launch a ping to that host, and wait until it responds. And then, connect using SSH (user is `root` and password is `raspberry`). You may just run the following command:
+Power up the reTerminal and wait a couple of time. And then, connect ot ssh.
 
 ```shell
 ssh root@zynthian.local
 ```
 
-Once you are inside the reTerminal, it's time to download the needed drivers. This process is also well explained in the reTerminal WiKi: [Install reTerminal drivers after flashing new Raspberry Pi OS/ Ubuntu OS or Other OS](https://wiki.seeedstudio.com/reTerminal/#install-reterminal-drivers-after-flashing-new-raspberry-pi-os-ubuntu-os-or-other-os). Create a directory called `drivers`, enter it and clone the following repository:
+Once you are inside the reTerminal, it's time to download and install the needed drivers. Read the reTerminal WiKi: [Install reTerminal drivers after flashing new Raspberry Pi OS/ Ubuntu OS or Other OS](https://wiki.seeedstudio.com/reTerminal/#install-reterminal-drivers-after-flashing-new-raspberry-pi-os-ubuntu-os-or-other-os):
 
 ```shell
-mkdir drivers
-cd drivers
 git clone --depth 1 https://github.com/Seeed-Studio/seeed-linux-dtoverlays
 ```
 
@@ -64,10 +37,10 @@ Now, enter in that directory and run the installation script:
 
 ```shell
 cd seeed-linux-dtoverlays
-./scripts/reTerminal.sh
+./scripts/reTerminal.sh --keep-kernel
 ```
 
-This will install some packages, and compile the kernel modules needed for the hardware to work. It will take a while, so wait patiently again :).
+This will install some packages, and compile the kernel modules needed for the hardware to work.
 
 ---
 
